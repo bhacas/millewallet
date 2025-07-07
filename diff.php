@@ -29,7 +29,7 @@ $plik_poprzedni = $pliki[1];
 preg_match($wzor, basename($plik_najnowszy), $match);
 $data = $match[1];
 $godzina = $match[2];
-$plik_wyjsciowy = "Historia_transakcji_{$data}_{$godzina}_diff.csv";
+$plik_wyjsciowy = "transactions.csv";
 
 // Wczytaj linie z obu plików (bez nagłówków)
 $linie_najnowszy = array_slice(file($plik_najnowszy, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES), 1);
