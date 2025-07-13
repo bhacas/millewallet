@@ -32,7 +32,7 @@ const FILE_NAME = 'transactions.csv';
     await page.type('input[type="password"]', PASSWORD);
     await page.click('button[type="submit"]');
 
-    await page.waitForNavigation({ waitUntil: 'networkidle2' });
+    await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000  });
     console.log("✅ Zalogowano.");
 
     console.log("📁 Przechodzę do strony importu...");
