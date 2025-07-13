@@ -5,7 +5,7 @@ const path = require('path');
 
 const EMAIL = process.env.EMAIL;
 const PASSWORD = process.env.PASSWORD;
-const FILE_NAME = 'transactions.csv';
+const FILE_NAME = `transactions_${new Date().toISOString().slice(0, 10).replace(/-/g, '_')}.csv`;
 
 (async () => {
   const browser = await puppeteer.launch({
