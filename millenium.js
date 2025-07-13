@@ -12,7 +12,8 @@ const PESEL = process.env.PESEL;
     const browser = await puppeteer.launch({
         headless: false,
         slowMo: 100,
-        defaultViewport: null
+        defaultViewport: null,
+        args: ['--no-sandbox', '--disable-setuid-sandbox'],
     });
 
     const page = await browser.newPage();
@@ -20,7 +21,7 @@ const PESEL = process.env.PESEL;
     const fs = require('fs');
     const path = require('path');
 
-    const downloadPath = path.resolve('./downloads');
+    const downloadPath = path.resolve('/app/downloads');
     fs.mkdirSync(downloadPath, { recursive: true }); // utwórz folder jeśli nie istnieje
 
     const client = await page.target().createCDPSession();
@@ -39,6 +40,8 @@ const PESEL = process.env.PESEL;
         await page.click('button[type="submit"]');
 
         await page.waitForSelector('.css-mevgbx', { visible: true, timeout: 30000 });
+        await page.waitForSelector('input[type="password"]', { visible: true, timeout: 10000 });
+
         await page.type('input[type="password"]', HASLO1);
 
         const peselfields = await page.$$('.css-nfgiif');

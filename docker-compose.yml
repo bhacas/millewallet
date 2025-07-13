@@ -1,0 +1,12 @@
+version: '3.8'
+
+services:
+  puppeteer:
+    build: .
+    env_file:
+      - .env
+    volumes:
+      - .:/app
+      - ./downloads:/app/downloads
+    tty: true
+    stdin_open: true
