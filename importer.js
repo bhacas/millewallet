@@ -38,7 +38,7 @@ const FILE_NAME = 'transactions.csv';
     console.log("📁 Przechodzę do strony importu...");
     await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2', timeout: 120000 });
 
-    await page.waitForSelector('button[type="button"]', { visible: true, timeout: 30000 });
+    await page.waitForSelector('button[type="button"]', { visible: true, timeout: 300000 });
 
     const filePath = path.resolve(__dirname, FILE_NAME);
     console.log(`📄 Wczytywanie pliku: ${filePath}`);
