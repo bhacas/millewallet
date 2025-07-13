@@ -1,9 +1,22 @@
 <?php
 
+function usunStarePliki($sciezka, $wzor, $dni = 30) {
+    $limitCzasu = strtotime("-$dni days");
+    foreach (glob($sciezka . DIRECTORY_SEPARATOR . "Historia_transakcji_*.csv") as $plik) {
+        if (preg_match($wzor, basename($plik))) {
+            if (filemtime($plik) < $limitCzasu) {
+                unlink($plik);
+                echo "Usunięto stary plik: " . basename($plik) . PHP_EOL;
+            }
+        }
+    }
+}
+
 $sciezka = __DIR__ . '/downloads';
 $wzor = '/Historia_transakcji_(\d{8})_(\d{6})\.csv$/';
 $naglowek = '﻿"Numer rachunku/karty","Data transakcji","Data rozliczenia","Rodzaj transakcji","Na konto/Z konta","Odbiorca/Zleceniodawca","Opis","Obciążenia","Uznania","Saldo","Waluta"';
 
+usunStarePliki($sciezka, $wzor);
 $pliki = array_filter(glob($sciezka . DIRECTORY_SEPARATOR . "Historia_transakcji_*.csv"), function($plik) use ($wzor) {
     return preg_match($wzor, basename($plik));
 });
