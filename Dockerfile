@@ -33,7 +33,7 @@ RUN echo "0 15 * * * root bash /app/run.sh >> /app/logs/cron.log 2>&1" > /etc/cr
     chmod 0644 /etc/cron.d/puppeteer-cron
 
 # (Opcjonalnie) Dodaj testowe zadanie na każdą minutę – do debugowania
-# RUN echo "* * * * * root echo 'cron działa: $(date)' >> /app/logs/cron.log" >> /etc/cron.d/puppeteer-cron
+RUN echo "* * * * * root echo 'cron działa: $(date)' >> /app/logs/cron.log" >> /etc/cron.d/puppeteer-cron
 
 # Uruchom crona w trybie pierwszoplanowym
 CMD ["cron", "-f"]
