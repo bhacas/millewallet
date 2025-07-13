@@ -32,15 +32,15 @@ const PESEL = process.env.PESEL;
 
     try {
         console.log("🔐 Logowanie...");
-        await page.goto('https://login.bankmillennium.pl/retail/login/', { waitUntil: 'networkidle2' });
+        await page.goto('https://login.bankmillennium.pl/retail/login/', { waitUntil: 'networkidle2', timeout: 120000 });
 
         await page.waitForSelector('#millecode', { visible: true });
 
         await page.type('input[type="text"]', MILLEKOD);
         await page.click('button[type="submit"]');
 
-        await page.waitForSelector('.css-mevgbx', { visible: true, timeout: 30000 });
-        await page.waitForSelector('input[type="password"]', { visible: true, timeout: 10000 });
+        await page.waitForSelector('.css-mevgbx', { visible: true, timeout: 300000 });
+        await page.waitForSelector('input[type="password"]', { visible: true, timeout: 100000 });
 
         await page.type('input[type="password"]', HASLO1);
 
@@ -57,20 +57,20 @@ const PESEL = process.env.PESEL;
 
         await page.click('button[type="submit"]');
 
-        await page.waitForSelector('div[clickstreamid="once-time-access-tile-button"]', { visible: true, timeout: 30000 });
+        await page.waitForSelector('div[clickstreamid="once-time-access-tile-button"]', { visible: true, timeout: 300000 });
         await page.click('div[clickstreamid="once-time-access-tile-button"]');
 
         await page.waitForSelector('.uwg5kr.c-qhvb55', { visible: true, timeout: 300000 });
 
         console.log("✅ Zalogowano.");
 
-        await page.goto('https://online.bankmillennium.pl/osobiste2/AccountActivity', { waitUntil: 'networkidle2' });
+        await page.goto('https://online.bankmillennium.pl/osobiste2/AccountActivity', { waitUntil: 'networkidle2', timeout: 120000 });
         await page.click('#Account_checkBox_2');
         await page.select('select#Content_MainPanel_DocumentFieldGroup_MNDocumentType_ddlList', '3');
         await page.click('#BtnDownload');
 
 
-        await new Promise(resolve => setTimeout(resolve, 5000));
+        await new Promise(resolve => setTimeout(resolve, 50000));
     } catch (error) {
         console.error("❌ Wystąpił błąd:", error);
     } finally {

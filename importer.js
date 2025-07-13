@@ -19,11 +19,11 @@ const FILE_NAME = 'transactions.csv';
 
   try {
     console.log("🔐 Logowanie...");
-    await page.goto('https://web.budgetbakers.com', { waitUntil: 'networkidle2' });
+    await page.goto('https://web.budgetbakers.com', { waitUntil: 'networkidle2', timeout: 120000 });
 
     const popupbuttonselector = '.ui.blue.circular.inverted.button';
 
-    const popupbutton = await page.waitForSelector(popupbuttonselector, { visible: true, timeout: 2000 }).catch(() => null);
+    const popupbutton = await page.waitForSelector(popupbuttonselector, { visible: true, timeout: 30000 }).catch(() => null);
     if (popupbutton) {
       await popupbutton.click();
     }
@@ -36,9 +36,9 @@ const FILE_NAME = 'transactions.csv';
     console.log("✅ Zalogowano.");
 
     console.log("📁 Przechodzę do strony importu...");
-    await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2' });
+    await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2', timeout: 120000 });
 
-    await page.waitForSelector('button[type="button"]', { visible: true });
+    await page.waitForSelector('button[type="button"]', { visible: true, timeout: 30000 });
 
     const filePath = path.resolve(__dirname, FILE_NAME);
     console.log(`📄 Wczytywanie pliku: ${filePath}`);
@@ -53,14 +53,14 @@ const FILE_NAME = 'transactions.csv';
 
     await page.waitForSelector('.ui.fullscreen.modal.transition.visible.active.mapping-preview', {
       visible: true,
-      timeout: 30000
+      timeout: 300000
     });
 
     await page.click('.ui.fullscreen.modal.transition.visible.active.mapping-preview .ui.circular.primary.button');
 
     await page.waitForSelector('.ui.small.modal.transition.visible.active.modal-animation.visible.transition', {
       visible: true,
-      timeout: 30000
+      timeout: 300000
     });
 
     console.log("🏁 Import zakończony.");
