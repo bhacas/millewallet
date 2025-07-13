@@ -10,7 +10,6 @@ const FILE_NAME = 'transactions.csv';
 (async () => {
   const browser = await puppeteer.launch({
     headless: false,
-    slowMo: 100,
     defaultViewport: null,
     args: ['--no-sandbox', '--disable-setuid-sandbox'],
   });
