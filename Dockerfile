@@ -24,7 +24,7 @@ RUN npm install
 COPY . .
 
 # Dodaj zadanie cron: codziennie o 15:00
-RUN echo "0 15 * * * root xvfb-run -a bash /app/run.sh >> /app/logs/cron.log 2>&1" > /etc/cron.d/puppeteer-cron && \
+RUN echo "0 15 * * * root bash /app/run.sh >> /app/logs/cron.log 2>&1" > /etc/cron.d/puppeteer-cron && \
     chmod 0644 /etc/cron.d/puppeteer-cron && \
     crontab /etc/cron.d/puppeteer-cron
 
