@@ -1,4 +1,4 @@
-require('dotenv').config(); // ← Ładowanie zmiennych środowiskowych
+require('dotenv').config();
 
 const puppeteer = require('puppeteer');
 const path = require('path');
@@ -44,7 +44,7 @@ const FILE_NAME = `transactions_${new Date().toISOString().slice(0, 10).replace(
 
     const [fileChooser] = await Promise.all([
       page.waitForFileChooser(),
-      page.click('.ui.circular.fluid.primary.button') // "Upload"
+      page.click('.ui.circular.fluid.primary.button')
     ]);
     await fileChooser.accept([filePath]);
 

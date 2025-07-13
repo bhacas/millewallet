@@ -1,5 +1,5 @@
 
-require('dotenv').config(); // ← Ładowanie zmiennych środowiskowych
+require('dotenv').config();
 
 const puppeteer = require('puppeteer');
 const path = require('path');
@@ -21,7 +21,7 @@ const PESEL = process.env.PESEL;
     const path = require('path');
 
     const downloadPath = path.resolve('/app/downloads');
-    fs.mkdirSync(downloadPath, { recursive: true }); // utwórz folder jeśli nie istnieje
+    fs.mkdirSync(downloadPath, { recursive: true });
 
     const client = await page.target().createCDPSession();
     await client.send('Page.setDownloadBehavior', {
