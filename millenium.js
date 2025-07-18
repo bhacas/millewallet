@@ -72,6 +72,7 @@ const PESEL = process.env.PESEL;
         await new Promise(resolve => setTimeout(resolve, 50000));
     } catch (error) {
         console.error("❌ Wystąpił błąd:", error);
+        process.exit(1);
     } finally {
         await browser.close();
     }

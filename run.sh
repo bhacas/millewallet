@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 
 cd /app
 DZIS=$(date +"%Y_%m_%d")

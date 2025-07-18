@@ -65,6 +65,7 @@ const FILE_NAME = `transactions_${new Date().toISOString().slice(0, 10).replace(
     console.log("🏁 Import zakończony.");
   } catch (error) {
     console.error("❌ Wystąpił błąd:", error);
+    process.exit(1)
   } finally {
     await browser.close();
   }
