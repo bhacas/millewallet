@@ -33,7 +33,7 @@ const PESEL = process.env.PESEL;
         console.log("🔐 Logowanie...");
         await page.goto('https://login.bankmillennium.pl/retail/login/', { waitUntil: 'networkidle2', timeout: 120000 });
 
-        await page.waitForSelector('#millecode', { visible: true });
+        await page.waitForSelector('#millecode', { visible: true, timeout: 120000 });
 
         await page.type('input[type="text"]', MILLEKOD);
         await page.click('button[type="submit"]');
