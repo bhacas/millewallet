@@ -96,8 +96,6 @@ const PESEL = process.env.PESEL;
         if (!newFilePath) {
             throw new Error(`❌ BŁĄD: Nie udało się pobrać pliku w ciągu ${downloadTimeout / 1000} sekund.`);
         }
-
-        await new Promise(resolve => setTimeout(resolve, 50000));
     } catch (error) {
         console.error("❌ Wystąpił błąd:", error);
         process.exit(1);
