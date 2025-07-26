@@ -12,7 +12,6 @@ const PESEL = process.env.PESEL;
     const browser = await puppeteer.launch({
         headless: false,
         args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080'],
-        slowMo: 100,
         defaultViewport: {
             width: 1920,
             height: 1080,
@@ -70,8 +69,33 @@ const PESEL = process.env.PESEL;
         await page.goto('https://online.bankmillennium.pl/osobiste2/AccountActivity', { waitUntil: 'networkidle2', timeout: 120000 });
         await page.click('#Account_checkBox_2');
         await page.select('select#Content_MainPanel_DocumentFieldGroup_MNDocumentType_ddlList', '3');
+
+        console.log("⏳ Inicjowanie pobierania i oczekiwanie na plik...");
+
+        const filesBeforeDownload = new Set(fs.readdirSync(downloadPath));
+
         await page.click('#BtnDownload');
 
+        const downloadTimeout = 60000;
+        const startTime = Date.now();
+        let newFilePath = null;
+
+        while (Date.now() - startTime < downloadTimeout) {
+            const currentFiles = fs.readdirSync(downloadPath);
+            const newFile = currentFiles.find(file => !filesBeforeDownload.has(file) && !file.endsWith('.crdownload'));
+
+            if (newFile) {
+                newFilePath = path.join(downloadPath, newFile);
+                console.log(`✅ Plik został pomyślnie pobrany: ${newFilePath}`);
+                break;
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 1000));
+        }
+
+        if (!newFilePath) {
+            throw new Error(`❌ BŁĄD: Nie udało się pobrać pliku w ciągu ${downloadTimeout / 1000} sekund.`);
+        }
 
         await new Promise(resolve => setTimeout(resolve, 50000));
     } catch (error) {
