@@ -11,8 +11,12 @@ const PESEL = process.env.PESEL;
 (async () => {
     const browser = await puppeteer.launch({
         headless: false,
-        defaultViewport: null,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080'],
+        slowMo: 100,
+        defaultViewport: {
+            width: 1920,
+            height: 1080,
+        },
     });
 
     const page = await browser.newPage();
@@ -33,7 +37,7 @@ const PESEL = process.env.PESEL;
         console.log("🔐 Logowanie...");
         await page.goto('https://login.bankmillennium.pl/retail/login/', { waitUntil: 'networkidle2', timeout: 120000 });
 
-        await page.waitForSelector('#millecode', { visible: true, timeout: 120000 });
+        await page.waitForSelector('#millecode_input', { visible: true, timeout: 120000 });
 
         await page.type('input[type="text"]', MILLEKOD);
         await page.click('button[type="submit"]');
