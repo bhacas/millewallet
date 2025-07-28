@@ -10,3 +10,4 @@ services:
       - ./downloads:/app/downloads
     tty: true
     stdin_open: true
+    restart: unless-stopped
