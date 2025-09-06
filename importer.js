@@ -9,7 +9,6 @@ const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const EMAIL = process.env.EMAIL;
 const FILE_NAME = `transactions_${new Date().toISOString().slice(0, 10).replace(/-/g, '_')}.csv`;
 
-// Helper: pobiera magic link przez skrypt PHP (Gmail API OAuth)
 function getMagicLinkViaPhp() {
     return new Promise((resolve, reject) => {
         execFile('php', ['fetch_magic_link.php'], { timeout: 120000 }, (err, stdout, stderr) => {
@@ -26,13 +25,10 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
     const bytes = fs.readFileSync(abs);
     const fileName = path.basename(abs);
 
-    // upewnij się, że dropzone jest widoczny
-    const dz = await page.waitForSelector(dropzoneSelector, { visible: true, timeout: 220000 });
+    const dz = await page.waitForSelector(dropzoneSelector, { visible: true});
 
-    // wyrzuć ewentualny overlay, żeby eventy nie były blokowane (opcjonalne)
     await dz.evaluate(el => { el.style.pointerEvents = 'all'; });
 
-    // Zasymuluj dragenter/dragover/drop z DataTransfer i File
     await page.evaluate(
         async ({ selector, bytesArr, fileName, mime }) => {
             const target = document.querySelector(selector);
@@ -42,20 +38,16 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
             const blob = new Blob([uint8], { type: mime });
             const file = new File([blob], fileName, { type: mime });
 
-            // DataTransfer z plikiem
             const dt = new DataTransfer();
             dt.items.add(file);
 
             const fire = (type) =>
                 target.dispatchEvent(new DragEvent(type, { bubbles: true, cancelable: true, dataTransfer: dt }));
 
-            // niektóre biblioteki wymagają kolejności: enter -> over -> drop
             fire('dragenter');
             fire('dragover');
             fire('drop');
 
-            // dodatkowo — Mantine Dropzone czasem słucha też eventu 'change' na Shadow/hidden handlerach,
-            // więc dla pewności próbujemy jeszcze event inputowy na target (no-op jeśli nieużywany)
             target.dispatchEvent(new Event('change', { bubbles: true }));
         },
         { selector: dropzoneSelector, bytesArr: Array.from(bytes), fileName, mime }
@@ -76,38 +68,35 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
             '--disable-features=site-per-process',
             '--renderer-process-limit=1',
         ],
-        protocolTimeout: 220000,
+        protocolTimeout: 500000,
     });
 
     const page = await browser.newPage();
-    page.setDefaultTimeout(220000);
-    page.setDefaultNavigationTimeout(220000);
+    page.setDefaultTimeout(500000);
+    page.setDefaultNavigationTimeout(500000);
 
     try {
         console.log("🔐 Logowanie (krok 1: podanie e-maila)...");
-        await page.goto('https://web.budgetbakers.com', { waitUntil: 'networkidle2', timeout: 120000 });
+        await page.goto('https://web.budgetbakers.com', { waitUntil: 'networkidle2'});
 
         await page.type('input[data-path="email"]', EMAIL);
         await page.click('button[type="submit"]');
 
-        // --- NOWE: pobranie magic linka z Gmaila przez Gmail API (PHP) ---
         console.log("📧 Pobieram magic link z Gmaila (Gmail API OAuth)...");
         const magicLink = await getMagicLinkViaPhp();
         console.log("🔗 Magic link:", magicLink);
 
-        // Przejście na magic link celem domknięcia logowania
-        await page.goto(magicLink, { waitUntil: 'networkidle2', timeout: 420000 });
+        await page.goto(magicLink, { waitUntil: 'networkidle2'});
 
-        // Oczekiwanie aż dashboard się załaduje (dopasuj selektor jeśli trzeba)
-        await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 420000 }).catch(() => {});
+        await page.waitForNavigation({ waitUntil: 'networkidle2'}).catch(() => {});
         console.log("✅ Zalogowano.");
 
         const dropzoneSel = '.mantine-Dropzone-inner';
 
         console.log("📁 Przechodzę do strony importu...");
-        await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2', timeout: 220000 });
+        await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2'});
 
-        await page.waitForSelector(dropzoneSel, { visible: true, timeout: 220000 });
+        await page.waitForSelector(dropzoneSel, { visible: true});
         await dropFileOnMantine(page, dropzoneSel, path.resolve(__dirname, FILE_NAME));
 
         const fileName = path.basename(FILE_NAME);
@@ -121,7 +110,7 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
                     card.innerText.includes(name)
                 );
             },
-            { timeout: 60000 },
+            { timeout: 500000 },
             fileName
         );
 

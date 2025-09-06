@@ -27,6 +27,8 @@ const PESEL = process.env.PESEL;
     });
 
     const page = await browser.newPage();
+    page.setDefaultTimeout(500000);
+    page.setDefaultNavigationTimeout(500000);
 
     const fs = require('fs');
     const path = require('path');
@@ -42,15 +44,15 @@ const PESEL = process.env.PESEL;
 
     try {
         console.log("🔐 Logowanie...");
-        await page.goto('https://login.bankmillennium.pl/retail/login/', { waitUntil: 'networkidle2', timeout: 120000 });
+        await page.goto('https://login.bankmillennium.pl/retail/login/', { waitUntil: 'networkidle2'});
 
-        await page.waitForSelector('#millecode_input', { visible: true, timeout: 120000 });
+        await page.waitForSelector('#millecode_input', { visible: true});
 
         await page.type('input[type="text"]', MILLEKOD);
         await page.click('button[type="submit"]');
 
-        await page.waitForSelector('.css-mevgbx', { visible: true, timeout: 300000 });
-        await page.waitForSelector('input[type="password"]', { visible: true, timeout: 100000 });
+        await page.waitForSelector('.css-mevgbx', { visible: true});
+        await page.waitForSelector('input[type="password"]', { visible: true});
 
         await page.type('input[type="password"]', HASLO1);
 
@@ -67,14 +69,14 @@ const PESEL = process.env.PESEL;
 
         await page.click('button[type="submit"]');
 
-        await page.waitForSelector('div[clickstreamid="once-time-access-tile-button"]', { visible: true, timeout: 300000 });
+        await page.waitForSelector('div[clickstreamid="once-time-access-tile-button"]', { visible: true});
         await page.click('div[clickstreamid="once-time-access-tile-button"]');
 
-        await page.waitForSelector('.uwg5kr.c-qhvb55', { visible: true, timeout: 300000 });
+        await page.waitForSelector('.uwg5kr.c-qhvb55', { visible: true});
 
         console.log("✅ Zalogowano.");
 
-        await page.goto('https://online.bankmillennium.pl/osobiste2/AccountActivity', { waitUntil: 'networkidle2', timeout: 120000 });
+        await page.goto('https://online.bankmillennium.pl/osobiste2/AccountActivity', { waitUntil: 'networkidle2'});
         await page.click('#Account_checkBox_2');
         await page.select('select#Content_MainPanel_DocumentFieldGroup_MNDocumentType_ddlList', '3');
 
