@@ -69,7 +69,13 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
     const browser = await puppeteer.launch({
         headless: false,
         defaultViewport: null,
-        args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-gpu',
+            '--disable-features=site-per-process',
+            '--renderer-process-limit=1',
+        ],
         protocolTimeout: 220000,
     });
 

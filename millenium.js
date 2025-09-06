@@ -11,7 +11,14 @@ const PESEL = process.env.PESEL;
 (async () => {
     const browser = await puppeteer.launch({
         headless: false,
-        args: ['--no-sandbox', '--disable-setuid-sandbox', '--window-size=1920,1080'],
+        args: [
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-gpu',
+            '--disable-features=site-per-process',
+            '--renderer-process-limit=1',
+            '--window-size=1920,1080'
+        ],
         defaultViewport: {
             width: 1920,
             height: 1080,
