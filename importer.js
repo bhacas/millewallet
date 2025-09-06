@@ -70,9 +70,12 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
         headless: false,
         defaultViewport: null,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
+        protocolTimeout: 220000,
     });
 
     const page = await browser.newPage();
+    page.setDefaultTimeout(220000);
+    page.setDefaultNavigationTimeout(220000);
 
     try {
         console.log("🔐 Logowanie (krok 1: podanie e-maila)...");
