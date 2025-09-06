@@ -27,7 +27,7 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
     const fileName = path.basename(abs);
 
     // upewnij się, że dropzone jest widoczny
-    const dz = await page.waitForSelector(dropzoneSelector, { visible: true, timeout: 60000 });
+    const dz = await page.waitForSelector(dropzoneSelector, { visible: true, timeout: 220000 });
 
     // wyrzuć ewentualny overlay, żeby eventy nie były blokowane (opcjonalne)
     await dz.evaluate(el => { el.style.pointerEvents = 'all'; });
@@ -98,7 +98,7 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
         console.log("📁 Przechodzę do strony importu...");
         await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2', timeout: 220000 });
 
-        await page.waitForSelector(dropzoneSel, { visible: true, timeout: 60000 });
+        await page.waitForSelector(dropzoneSel, { visible: true, timeout: 220000 });
         await dropFileOnMantine(page, dropzoneSel, path.resolve(__dirname, FILE_NAME));
 
         const fileName = path.basename(FILE_NAME);
