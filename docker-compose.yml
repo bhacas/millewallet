@@ -11,3 +11,4 @@ services:
     tty: true
     stdin_open: true
     restart: unless-stopped
+    shm_size: '512m'
