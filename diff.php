@@ -40,33 +40,68 @@ function sanitizeCsvLine(string $line): string {
     return $line;
 }
 
-/**
- * Wczytaj plik i zwróć TYLKO poprawne (po naprawie) linie jako stringi,
- * gotowe do porównań. Możesz też zwrócić tablice pól jeśli wolisz działać na kolumnach.
- */
+function reformatCsvLineDates(string $line, int $expectedCols = 11): string {
+    $cols = str_getcsv($line, ',', '"');
+    if (count($cols) !== $expectedCols) {
+        return $line; // zostaw bez zmian jeśli coś nie pasuje
+    }
+
+    foreach ([1, 2] as $i) { // Data transakcji i Data rozliczenia
+        if (!empty($cols[$i]) && preg_match('/^\d{4}-\d{2}-\d{2}$/', $cols[$i])) {
+            $dt = DateTime::createFromFormat('Y-m-d', $cols[$i]);
+            if ($dt) {
+                $cols[$i] = $dt->format('d-m-Y');
+            }
+        }
+    }
+
+    // odbuduj poprawną linię CSV
+    return '"' . implode('","', array_map(
+            fn($v) => str_replace('"', '""', $v),
+            $cols
+        )) . '"';
+}
+
 function loadFixedLines(string $path, string $expectedHeader, int $expectedCols = 11): array {
     $lines = file($path, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     if (!$lines) return [];
 
-    // pomijamy nagłówek (różne BOM-y itd.)
+    // pomiń nagłówek
     array_shift($lines);
 
     $out = [];
     foreach ($lines as $line) {
-        $fixed = sanitizeCsvLine($line);
-        // sprawdź liczbę kolumn po naprawie
-        $cols = str_getcsv($fixed, ',', '"');
-        if (count($cols) === $expectedCols) {
-            // ponownie zbuduj „kanoniczną” linię – ujednolica różnice w whitespacach
-            $out[] = '"' . implode('","', array_map(
-                    fn($v) => str_replace('"', '""', $v), // ucieczka cudzysłowów
-                    $cols
-                )) . '"';
-        } else {
-            // opcjonalne logowanie – można pominąć problematyczną pozycję
-            // error_log("Pominięto błędną linię w $path: $fixed");
+        // 1) napraw klasyczny błąd z brakującym przecinkiem: """ -> ","
+        while (strpos($line, '"""') !== false) {
+            $line = str_replace('"""', '","', $line);
         }
+
+        // 2) domknij niezbalansowane cudzysłowy
+        if ((substr_count($line, '"') % 2) !== 0) {
+            $line .= '"';
+        }
+
+        // 3) sparsuj CSV
+        $cols = str_getcsv($line, ',', '"');
+        if (count($cols) !== $expectedCols) {
+            // jeśli dalej źle — pomiń wiersz
+            continue;
+        }
+
+        // 4) USUŃ niepoprawne " tylko z nazw/opi­sów (kolumny 5 i 6)
+        foreach ([5, 6] as $i) {
+            if (isset($cols[$i]) && $cols[$i] !== '') {
+                $cols[$i] = str_replace('"', '', $cols[$i]);
+            }
+        }
+
+        // 5) odbuduj kanoniczną linię CSV (ucieczka " w innych kolumnach)
+        $out[] = '"' . implode('","', array_map(
+                fn($v) => str_replace('"', '""', $v),
+                $cols
+            )) . '"';
     }
+
     return $out;
 }
 
@@ -98,6 +133,7 @@ $linie_poprzedni = loadFixedLines($plik_poprzedni, $naglowek, 11);
 
 // różnice po kanonikalizacji
 $roznice = array_values(array_diff($linie_najnowszy, $linie_poprzedni));
+$roznice = array_map('reformatCsvLineDates', $roznice);
 
 if (empty($roznice)) {
     echo "Brak nowych unikalnych transakcji – nie utworzono pliku.\n";
