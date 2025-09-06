@@ -16,6 +16,7 @@ const PESEL = process.env.PESEL;
             width: 1920,
             height: 1080,
         },
+        slowMo: 50,
     });
 
     const page = await browser.newPage();
@@ -23,7 +24,7 @@ const PESEL = process.env.PESEL;
     const fs = require('fs');
     const path = require('path');
 
-    const downloadPath = path.resolve('/app/downloads');
+    const downloadPath = path.resolve('./downloads');
     fs.mkdirSync(downloadPath, { recursive: true });
 
     const client = await page.target().createCDPSession();
