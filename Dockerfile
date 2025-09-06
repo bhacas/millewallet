@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
   cron \
   php-cli \
   curl \
+  unzip \
   tzdata \
   nano \
   libx11-xcb1 libxcomposite1 libxcursor1 libxdamage1 libxi6 \
@@ -17,6 +18,7 @@ RUN apt-get update && apt-get install -y \
   --no-install-recommends && \
   ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && \
   echo $TZ > /etc/timezone && \
+  curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer && \
   apt-get clean && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
