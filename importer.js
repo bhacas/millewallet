@@ -27,7 +27,7 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
     const fileName = path.basename(abs);
 
     // upewnij się, że dropzone jest widoczny
-    const dz = await page.waitForSelector(dropzoneSelector, { visible: true, timeout: 30000 });
+    const dz = await page.waitForSelector(dropzoneSelector, { visible: true, timeout: 60000 });
 
     // wyrzuć ewentualny overlay, żeby eventy nie były blokowane (opcjonalne)
     await dz.evaluate(el => { el.style.pointerEvents = 'all'; });
@@ -87,18 +87,18 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
         console.log("🔗 Magic link:", magicLink);
 
         // Przejście na magic link celem domknięcia logowania
-        await page.goto(magicLink, { waitUntil: 'networkidle2', timeout: 120000 });
+        await page.goto(magicLink, { waitUntil: 'networkidle2', timeout: 420000 });
 
         // Oczekiwanie aż dashboard się załaduje (dopasuj selektor jeśli trzeba)
-        await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 220000 }).catch(() => {});
+        await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 420000 }).catch(() => {});
         console.log("✅ Zalogowano.");
 
         const dropzoneSel = '.mantine-Dropzone-inner';
 
         console.log("📁 Przechodzę do strony importu...");
-        await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2', timeout: 120000 });
+        await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2', timeout: 220000 });
 
-        await page.waitForSelector(dropzoneSel, { visible: true, timeout: 30000 });
+        await page.waitForSelector(dropzoneSel, { visible: true, timeout: 60000 });
         await dropFileOnMantine(page, dropzoneSel, path.resolve(__dirname, FILE_NAME));
 
         const fileName = path.basename(FILE_NAME);
