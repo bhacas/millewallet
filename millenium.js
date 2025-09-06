@@ -23,7 +23,7 @@ const PESEL = process.env.PESEL;
             width: 1920,
             height: 1080,
         },
-        slowMo: 50,
+        protocolTimeout: 500000,
     });
 
     const page = await browser.newPage();
