@@ -70,7 +70,6 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
         headless: false,
         defaultViewport: null,
         args: ['--no-sandbox', '--disable-setuid-sandbox'],
-        slowMo: 50,
     });
 
     const page = await browser.newPage();
@@ -91,7 +90,7 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
         await page.goto(magicLink, { waitUntil: 'networkidle2', timeout: 120000 });
 
         // Oczekiwanie aż dashboard się załaduje (dopasuj selektor jeśli trzeba)
-        await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 120000 }).catch(() => {});
+        await page.waitForNavigation({ waitUntil: 'networkidle2', timeout: 220000 }).catch(() => {});
         console.log("✅ Zalogowano.");
 
         const dropzoneSel = '.mantine-Dropzone-inner';

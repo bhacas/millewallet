@@ -28,6 +28,7 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
+RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
 
 COPY . .
 
