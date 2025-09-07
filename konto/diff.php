@@ -12,13 +12,6 @@ function usunStarePliki($sciezka, $wzor, $dni = 30) {
     }
 }
 
-/**
- * Napraw typowe babole w liniach CSV:
- * - NBSP -> spacja
- * - """ (trzy cudzysłowy zlepione) -> "," (koniec pola + przecinek + początek pola)
- * - cudzysłów wewnątrz słowa -> podwójny cudzysłów
- * - domknięcie niezbalansowanego cudzysłowu
- */
 function sanitizeCsvLine(string $line): string {
     // 1) normalizacja NBSP i niewidków
     $line = str_replace(["\xC2\xA0", "\xE2\x80\x8B"], ' ', $line); // NBSP, zero-width space

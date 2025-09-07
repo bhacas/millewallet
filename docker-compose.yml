@@ -7,7 +7,8 @@ services:
       - .env
     volumes:
       - .:/app
-      - ./downloads:/app/downloads
+      - ./konto/downloads:/app/konto/downloads
+      - ./kk/downloads:/app/kk/downloads
     tty: true
     stdin_open: true
     restart: unless-stopped

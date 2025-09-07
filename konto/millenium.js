@@ -1,12 +1,14 @@
 
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const puppeteer = require('puppeteer');
-const path = require('path');
 
 const MILLEKOD = process.env.MILLEKOD;
 const HASLO1 = process.env.HASLO1;
 const PESEL = process.env.PESEL;
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 (async () => {
     const browser = await puppeteer.launch({
@@ -24,6 +26,7 @@ const PESEL = process.env.PESEL;
             height: 1080,
         },
         protocolTimeout: 500000,
+        //slowMo: 50,
     });
 
     const page = await browser.newPage();

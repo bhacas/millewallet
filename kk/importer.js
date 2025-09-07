@@ -1,17 +1,17 @@
-require('dotenv').config();
+const path = require('path');
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 
 const puppeteer = require('puppeteer');
-const path = require('path');
 const fs = require('fs');
 const { execFile } = require('child_process');
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 
 const EMAIL = process.env.EMAIL;
-const FILE_NAME = `transactions_${new Date().toISOString().slice(0, 10).replace(/-/g, '_')}.csv`;
+const FILE_NAME = `kk_transactions_${new Date().toISOString().slice(0, 10).replace(/-/g, '_')}.csv`;
 
 function getMagicLinkViaPhp() {
     return new Promise((resolve, reject) => {
-        execFile('php', ['fetch_magic_link.php'], { timeout: 120000 }, (err, stdout, stderr) => {
+        execFile('php', ['../fetch_magic_link.php'], { timeout: 120000 }, (err, stdout, stderr) => {
             if (err) return reject(new Error(`PHP error: ${stderr || err.message}`));
             const m = stdout.match(/MAGIC_LINK=(.+)/);
             if (m) return resolve(m[1].trim());
@@ -95,6 +95,19 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
 
         console.log("📁 Przechodzę do strony importu...");
         await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2'});
+
+        await page.click('input.mantine-Input-input.mantine-Select-input');
+
+        await page.waitForSelector('.mantine-Group-root');
+
+        const options = await page.$$('.mantine-Group-root');
+        for (const opt of options) {
+            const text = await opt.evaluate(el => el.textContent.trim());
+            if (text.includes('Karta Kredytowa')) {
+                await opt.click();
+                break;
+            }
+        }
 
         await page.waitForSelector(dropzoneSel, { visible: true});
         await dropFileOnMantine(page, dropzoneSel, path.resolve(__dirname, FILE_NAME));
