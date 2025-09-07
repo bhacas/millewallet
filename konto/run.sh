@@ -1,7 +1,7 @@
 #!/bin/bash
 set -e
 
-cd /app/konto
+cd /app/kk
 DZIS=$(date +"%Y_%m_%d")
 PLIK="transactions_${DZIS}.csv"
 
