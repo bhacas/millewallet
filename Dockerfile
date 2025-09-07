@@ -28,10 +28,10 @@ WORKDIR /app
 
 COPY package*.json ./
 RUN npm install
-RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
 
 COPY . .
 
+RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
 RUN mkdir -p /app/logs && touch /app/logs/cron.log
 
 RUN echo "0 15 * * * root bash /app/konto/run.sh >> /app/logs/cron.log 2>&1" > /etc/cron.d/puppeteer-cron && \
