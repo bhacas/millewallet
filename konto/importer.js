@@ -53,7 +53,7 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
         { selector: dropzoneSelector, bytesArr: Array.from(bytes), fileName, mime }
     );
 
-    await sleep(700);
+    await sleep(6000);
     console.log(`📥 Zasymulowano drop pliku: ${fileName}`);
 }
 

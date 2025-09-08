@@ -129,6 +129,22 @@ async function selectMantineOption(page, label) {
         await page.waitForSelector(dropzoneSel, { visible: true});
         await dropFileOnMantine(page, dropzoneSel, path.resolve(__dirname, FILE_NAME));
 
+        const fileName = path.basename(FILE_NAME);
+
+        console.log("⏳ Czekam na pojawienie się karty z plikiem:", fileName);
+
+        await page.waitForFunction(
+            (name) => {
+                const cards = document.querySelectorAll('.mantine-Card-root.mantine-Paper-root');
+                return Array.from(cards).some(card =>
+                    card.innerText.includes(name)
+                );
+            },
+            { timeout: 500000 },
+            fileName
+        );
+
+        console.log("✅ Pojawiła się karta z plikiem:", fileName);
         console.log("🏁 Import zakończony.");
     } catch (error) {
         console.error("❌ Wystąpił błąd:", error);
