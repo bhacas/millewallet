@@ -57,6 +57,32 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
     console.log(`📥 Zasymulowano drop pliku: ${fileName}`);
 }
 
+async function selectMantineOption(page, label) {
+    // 1) Otwórz dropdown
+    await page.click('input.mantine-Input-input.mantine-Select-input', { delay: 30 });
+
+    // 2) Poczekaj na portal/listę opcji
+    const listbox = await page.waitForSelector('[role="listbox"], [data-combobox-dropdown]', { visible: true });
+
+    // 3) Znajdź właściwą opcję PO TEKŚCIE i kliknij w DOM-ie (omija „hit testing”)
+    const clicked = await listbox.$$eval('.mantine-Group-root, [role="option"]', (nodes, wanted) => {
+        const el = nodes.find(n => n.textContent?.trim().includes(wanted));
+        if (!el) return false;
+        // przewiń i kliknij programowo (bez precyzji myszy)
+        el.scrollIntoView({ block: 'center', inline: 'center' });
+        el.click();
+        return true;
+    }, label);
+
+    if (!clicked) throw new Error(`Nie znalazłem opcji: ${label}`);
+
+    // 4) Opcjonalnie: poczekaj aż dropdown się zamknie / input zmieni wartość
+    await page.waitForFunction((wanted) => {
+        const input = document.querySelector('input.mantine-Input-input.mantine-Select-input');
+        return input && (input.value?.includes(wanted) || !document.querySelector('[role="listbox"], [data-combobox-dropdown]'));
+    }, {}, label);
+}
+
 (async () => {
     const browser = await puppeteer.launch({
         headless: false,
@@ -98,16 +124,7 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
 
         await page.click('input.mantine-Input-input.mantine-Select-input');
 
-        await page.waitForSelector('.mantine-Group-root');
-
-        const options = await page.$$('.mantine-Group-root');
-        for (const opt of options) {
-            const text = await opt.evaluate(el => el.textContent.trim());
-            if (text.includes('Karta Kredytowa')) {
-                await opt.click();
-                break;
-            }
-        }
+        await selectMantineOption(page, 'Karta Kredytowa');
 
         await page.waitForSelector(dropzoneSel, { visible: true});
         await dropFileOnMantine(page, dropzoneSel, path.resolve(__dirname, FILE_NAME));
