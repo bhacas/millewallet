@@ -140,7 +140,7 @@ async function selectMantineOption(page, label) {
                     card.innerText.includes(name)
                 );
             },
-            { timeout: 500000 },
+            { timeout: 1000000 },
             fileName
         );
 
