@@ -21,6 +21,7 @@ function getMagicLinkViaPhp() {
 }
 
 async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/csv') {
+    console.log(`📤 Przygotowuję się do dropu pliku ${filePath} na selektor ${dropzoneSelector}`);
     const abs = path.resolve(filePath);
     const bytes = fs.readFileSync(abs);
     const fileName = path.basename(abs);
@@ -58,13 +59,12 @@ async function dropFileOnMantine(page, dropzoneSelector, filePath, mime = 'text/
 }
 
 async function selectMantineOption(page, label) {
-    // 1) Otwórz dropdown
-    await page.click('input.mantine-Input-input.mantine-Select-input', { delay: 30 });
+    console.log(`🔽 Wybieram opcję z Mantine Select: ${label}`);
+    await page.click('input.mantine-Input-input.mantine-Select-input');
 
-    // 2) Poczekaj na portal/listę opcji
+
     const listbox = await page.waitForSelector('[role="listbox"], [data-combobox-dropdown]', { visible: true });
 
-    // 3) Znajdź właściwą opcję PO TEKŚCIE i kliknij w DOM-ie (omija „hit testing”)
     const clicked = await listbox.$$eval('.mantine-Group-root, [role="option"]', (nodes, wanted) => {
         const el = nodes.find(n => n.textContent?.trim().includes(wanted));
         if (!el) return false;
@@ -76,7 +76,8 @@ async function selectMantineOption(page, label) {
 
     if (!clicked) throw new Error(`Nie znalazłem opcji: ${label}`);
 
-    // 4) Opcjonalnie: poczekaj aż dropdown się zamknie / input zmieni wartość
+    console.log('✅ Wybrano opcję:', label);
+
     await page.waitForFunction((wanted) => {
         const input = document.querySelector('input.mantine-Input-input.mantine-Select-input');
         return input && (input.value?.includes(wanted) || !document.querySelector('[role="listbox"], [data-combobox-dropdown]'));
@@ -95,6 +96,7 @@ async function selectMantineOption(page, label) {
             '--renderer-process-limit=1',
         ],
         protocolTimeout: 500000,
+        slowMo: 50,
     });
 
     const page = await browser.newPage();
@@ -121,8 +123,6 @@ async function selectMantineOption(page, label) {
 
         console.log("📁 Przechodzę do strony importu...");
         await page.goto('https://web.budgetbakers.com/imports', { waitUntil: 'networkidle2'});
-
-        await page.click('input.mantine-Input-input.mantine-Select-input');
 
         await selectMantineOption(page, 'Karta Kredytowa');
 
