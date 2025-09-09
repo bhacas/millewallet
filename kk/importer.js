@@ -96,7 +96,7 @@ async function selectMantineOption(page, label) {
             '--renderer-process-limit=1',
         ],
         protocolTimeout: 500000,
-        slowMo: 50,
+        //slowMo: 50,
     });
 
     const page = await browser.newPage();
