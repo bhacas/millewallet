@@ -77,8 +77,13 @@ function loadFixedLines(string $path, string $expectedHeader, int $expectedCols 
         // 3) sparsuj CSV
         $cols = str_getcsv($line, ',', '"');
         if (count($cols) !== $expectedCols) {
-            // jeśli dalej źle — pomiń wiersz
             continue;
+        }
+
+        // 4a) FIX: jeśli brak kwot (Obciążenia i Uznania puste) -> ustaw Obciążenia na "0"
+        // indeksy wg nagłówka: 7=Obciążenia, 8=Uznania
+        if (($cols[7] ?? '') === '' && ($cols[8] ?? '') === '') {
+            $cols[7] = '0';
         }
 
         // 4) USUŃ niepoprawne " tylko z nazw/opi­sów (kolumny 5 i 6)
