@@ -16,7 +16,8 @@ function getClient(): GoogleClient {
     $client->setScopes([Gmail::GMAIL_READONLY]);
     $client->setAuthConfig(__DIR__ . '/credentials.json');
     $client->setAccessType('offline');
-    $client->setPrompt('consent');
+    // setPrompt('consent') tylko przy pierwszej autoryzacji (bez token.json)
+    // - NIE ustawiamy go globalnie, bo blokuje automatyczne odnawianie refresh tokenu
 
     $tokenPath = __DIR__ . '/token.json';
     if (is_file($tokenPath)) {
@@ -25,8 +26,16 @@ function getClient(): GoogleClient {
 
     if ($client->isAccessTokenExpired()) {
         if ($client->getRefreshToken()) {
-            $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            // Access token wygasł, ale refresh token jest ważny - odnów cicho
+            $newToken = $client->fetchAccessTokenWithRefreshToken($client->getRefreshToken());
+            if (isset($newToken['error'])) {
+                throw new RuntimeException('Błąd odnawiania tokenu: ' . ($newToken['error_description'] ?? $newToken['error']));
+            }
+            // Zapisz zaktualizowany token (z nowym access_token i ewentualnie nowym refresh_token)
+            file_put_contents($tokenPath, json_encode($client->getAccessToken(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         } else {
+            // Brak refresh tokenu - wymagana ręczna autoryzacja (tylko raz)
+            $client->setPrompt('consent');
             $authUrl = $client->createAuthUrl();
             fwrite(STDERR, "Otwórz w przeglądarce:\n$authUrl\n\nWklej tutaj kod autoryzacji: ");
             $authCode = trim(fgets(STDIN));
@@ -35,8 +44,8 @@ function getClient(): GoogleClient {
                 throw new RuntimeException('OAuth error: ' . ($tokens['error_description'] ?? $tokens['error']));
             }
             $client->setAccessToken($tokens);
+            file_put_contents($tokenPath, json_encode($client->getAccessToken(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
         }
-        file_put_contents($tokenPath, json_encode($client->getAccessToken(), JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES));
     }
 
     return $client;
