@@ -34,8 +34,8 @@ COPY . .
 RUN composer install --no-interaction --no-scripts --no-progress --prefer-dist
 RUN mkdir -p /app/logs && touch /app/logs/cron.log
 
-RUN echo "0 15 * * * root bash /app/konto/run.sh >> /app/logs/cron.log 2>&1" > /etc/cron.d/puppeteer-cron && \
-    #echo "0 16 * * 2,5 root bash /app/kk/run.sh >> /app/logs/cron.log 2>&1" >> /etc/cron.d/puppeteer-cron && \
+RUN echo "0 15 * * * root bash /app/src/scripts/run.sh konto >> /app/logs/cron.log 2>&1" > /etc/cron.d/puppeteer-cron && \
+    #echo "0 16 * * 2,5 root bash /app/src/scripts/run.sh kk >> /app/logs/cron.log 2>&1" >> /etc/cron.d/puppeteer-cron && \
     echo "" >> /etc/cron.d/puppeteer-cron && \
     chmod 0644 /etc/cron.d/puppeteer-cron
 

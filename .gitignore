@@ -1,0 +1,31 @@
+# Zmienne środowiskowe i wrażliwe dane
+.env
+credentials.json
+token.json
+
+# Zależności
+node_modules/
+vendor/
+
+# Pobrane pliki
+konto/downloads/
+kk/downloads/
+*.csv
+
+# Logi
+logs/
+*.log
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# System
+.DS_Store
+Thumbs.db
+
+# Docker volumes
+data/
